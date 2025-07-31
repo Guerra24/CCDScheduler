@@ -55,6 +55,10 @@ watcher.EventArrived += (sender, e) =>
             }
         }
         catch { }
+        finally
+        {
+            e.NewEvent.Dispose();
+        }
     });
 };
 
@@ -93,13 +97,15 @@ trayIcon.ContextMenu = new PopupMenu
                 td.Settings.MultipleInstances = TaskInstancesPolicy.IgnoreNew;
                 td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
                 td.Settings.DisallowStartIfOnBatteries = false;
+                td.Settings.StartWhenAvailable = true;
                 td.Triggers.Add(new LogonTrigger());
                 td.Actions.Add(new ExecAction(Environment.ProcessPath, workingDirectory: AppContext.BaseDirectory));
-                
+
                 task = TaskService.Instance.RootFolder.RegisterTaskDefinition("CCDSchedulerTask", td);
-                
+
                 item.Checked = true;
-            } else
+            }
+            else
             {
                 TaskService.Instance.RootFolder.DeleteTask("CCDSchedulerTask");
                 item.Checked = false;
